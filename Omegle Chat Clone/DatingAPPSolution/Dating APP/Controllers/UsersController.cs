@@ -1,0 +1,26 @@
+﻿using Dating_APP.Data;
+using Dating_APP.Entities;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+
+namespace Dating_APP.Controllers
+{
+    [ApiController]
+    [Route("api/[controller]")]
+    public class UsersController : ControllerBase
+    {
+        private readonly DataContext _context;
+
+        public UsersController(DataContext context)
+        {
+            _context = context;
+        }
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<User>>> Get() => await _context.Users.ToListAsync();
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<User>> GetUser(int id) => await _context.Users.FindAsync(id);
+
+
+    }
+}
