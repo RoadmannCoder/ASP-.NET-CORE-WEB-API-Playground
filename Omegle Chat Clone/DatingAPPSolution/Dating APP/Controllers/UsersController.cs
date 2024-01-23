@@ -1,13 +1,14 @@
 ﻿using Dating_APP.Data;
 using Dating_APP.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Dating_APP.Controllers
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class UsersController : ControllerBase
+
+    [Authorize]
+    public class UsersController : BaseApiController
     {
         private readonly DataContext _context;
 
@@ -15,6 +16,7 @@ namespace Dating_APP.Controllers
         {
             _context = context;
         }
+        [AllowAnonymous]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<User>>> Get() => await _context.Users.ToListAsync();
 
