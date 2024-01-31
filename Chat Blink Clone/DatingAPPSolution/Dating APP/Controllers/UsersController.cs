@@ -1,5 +1,8 @@
-﻿using Dating_APP.Data;
+﻿using AutoMapper;
+using Dating_APP.Data;
+using Dating_APP.DTOs;
 using Dating_APP.Entities;
+using Dating_APP.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -10,18 +13,38 @@ namespace Dating_APP.Controllers
     [Authorize]
     public class UsersController : BaseApiController
     {
-        private readonly DataContext _context;
+        private readonly IUserRepository _repository;
+        private readonly IMapper _mapper;
 
-        public UsersController(DataContext context)
+        public UsersController(IUserRepository repository, IMapper mapper)
         {
-            _context = context;
+            _repository = repository;
+            _mapper = mapper;
         }
-        [AllowAnonymous]
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<User>>> Get() => await _context.Users.ToListAsync();
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<User>> GetUser(int id) => await _context.Users.FindAsync(id);
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<MemberDTO>>> Get()
+        {
+            var users = await _repository.GetUserAsync();
+            var usersToReturn = _mapper.Map<IEnumerable<MemberDTO>>(users);
+            return Ok(usersToReturn);
+        }
+
+        [HttpGet("{id:int}")]
+        public async Task<ActionResult<MemberDTO>> GetUser(int id)
+        {
+            var users = await _repository.GetUserByIDAsync(id);
+            var usersToReturn = _mapper.Map<MemberDTO>(users);
+            return Ok(usersToReturn);
+        }
+
+        [HttpGet("{name}")]
+        public async Task<ActionResult<MemberDTO>> GetUser(string name)
+        {
+            var users = await _repository.GetUserByNameAsync(name);
+            var usersToReturn = _mapper.Map<MemberDTO>(users);
+            return Ok(usersToReturn);
+        }
 
 
     }
